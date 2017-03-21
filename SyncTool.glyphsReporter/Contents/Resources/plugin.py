@@ -46,10 +46,12 @@ class SyncTool(ReporterPlugin):
 			thisTab = font0.currentTab
 			thisMaster = font0.selectedFontMaster
 			mindex = thisTab.masterIndex()
-			thisScale = thisTab.graphicView().scale()
-			doKern = thisTab.graphicView().doKerning()
-			doSpace = thisTab.graphicView().doSpacing()
-			thisSelection = thisTab.graphicView().textStorage().selectedRange()
+			currentGraphicView = thisTab.graphicView()
+			thisScale = currentGraphicView.scale()
+			doKern = currentGraphicView.doKerning()
+			doSpace = currentGraphicView.doSpacing()
+			thisSelection = currentGraphicView.textStorage().selectedRange()
+			currentVisibleRect = currentGraphicView.visibleRect()
 
 			for otherFont in Glyphs.fonts:
 				if otherFont != Glyphs.font:
@@ -82,9 +84,10 @@ class SyncTool(ReporterPlugin):
 					iTab.text = normalizedText
 
 					# SET CARET INTO POSITION
-					otherFont.tool = "TextTool" # switch to tt to trigger glyphs view to focus
+					# otherFont.tool = "TextTool" # switch to tt to trigger glyphs view to focus
 					otherView.textStorage().setSelectedRange_(thisSelection)
-					otherFont.tool = otherFontLastTool
+					# otherFont.tool = otherFontLastTool
+					otherView.scrollRectToVisible_(currentVisibleRect) # new as proposed by WEI. Thanks!
 
 		except:
 			pass # print traceback.format_exc()
@@ -122,7 +125,7 @@ class SyncTool(ReporterPlugin):
 				self.activeGlyphChanged = False
 				return False
 		except:
-			print traceback.format_exc()
+			pass #print traceback.format_exc()
 
 
 	def drawKammerakindRahmen(self, thisFont):
