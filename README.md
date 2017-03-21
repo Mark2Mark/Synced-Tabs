@@ -1,6 +1,8 @@
 # Synced Tabs
 
-This is a plugin for the [Glyphs font editor](http://glyphsapp.com/). It is based on the great idea and script [Sync Edit Views.py](https://github.com/Tosche/Glyphs-Scripts/blob/master/Sync%20Edit%20Views.py) by [Tosche](https://github.com/Tosche).
+This is a plugin for the [Glyphs font editor](http://glyphsapp.com/).
+
+It is based on the **great idea and script** [Sync Edit Views.py](https://github.com/Tosche/Glyphs-Scripts/blob/master/Sync%20Edit%20Views.py) by [Tosche](https://github.com/Tosche).
 
 If active, it keeps all tabs from all open fonts in sync with the currently active tab.
 
