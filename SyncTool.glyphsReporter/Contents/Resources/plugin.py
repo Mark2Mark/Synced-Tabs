@@ -165,6 +165,7 @@ class SyncTool(ReporterPlugin):
 
 
 	#def observeMasterSwitch(self):
+	## Perhaps not nessecary anymore? Seems to update already ...
 
 	def observeViewPanning(self):
 		global currentViewPan
