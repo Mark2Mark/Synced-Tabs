@@ -16,6 +16,8 @@
 #
 #	TODO: selectedLayerOrigin [https://docu.glyphsapp.com/#selectedLayerOrigin]
 #	TODO: Make the same check for placeholder Layer as it is implemented for the newLine (GSControlLayer)
+#	TODO: Add more observers
+#	TODO: Keep Tools in sync as well?
 #
 #
 ###########################################################################################################
@@ -23,8 +25,13 @@
 from GlyphsApp.plugins import *
 import traceback
 
+# For the Observers
+#------------------
 currentGlyphName = ""
 currentCaretPosition = None
+currentZoom = None
+currentViewPan = None
+
 newLine = "\n"
 
 class SyncTool(ReporterPlugin):
@@ -33,7 +40,12 @@ class SyncTool(ReporterPlugin):
 		self.name = 'SyncTool'
 		self.menuName = Glyphs.localize({'en': u'Synced Tabs'})
 		#self.Glyphs = NSApplication.sharedApplication()
+		
+		# For the Observers
+		#------------------		
 		self.activeGlyphChanged = False
+		self.activeZoomChanged = False
+		self.activeViewPanChanged = False
 
 
 	def SyncEditViews(self):
@@ -95,6 +107,10 @@ class SyncTool(ReporterPlugin):
 			pass # print traceback.format_exc()
 
 
+
+	# Observers
+	#----------
+
 	def observeGlyphChange(self):
 		'''
 		Catch the event: `active glyph was changed in the edit tab`.
@@ -113,8 +129,7 @@ class SyncTool(ReporterPlugin):
 			lName = str(layer.parent.name)			
 			if str(currentGlyphName) != lName:
 				currentGlyphName = lName
-				self.activeGlyphChanged = True
-				return True
+				
 			else:
 				### If same glyph, check if position in tab (Otherwise changing from one /b to another in one tab wont trigger)
 				position = layer.parent.parent.currentTab.graphicView().textStorage().selectedRange()
@@ -127,7 +142,47 @@ class SyncTool(ReporterPlugin):
 				self.activeGlyphChanged = False
 				return False
 		except:
-			pass #print traceback.format_exc()
+			pass # print traceback.format_exc()
+
+
+
+	def observeZoom(self):
+		global currentZoom
+
+		try:
+			zoom = Glyphs.font.currentTab.scale
+			if str(currentZoom) != str(zoom):
+				currentZoom = zoom
+				self.activeZoomChanged = True
+				return True
+			else:
+				self.activeZoomChanged = False
+				return False
+		except:
+			pass # print traceback.format_exc()
+
+
+	#def observeMasterSwitch(self):
+
+	def observeViewPanning(self):
+		global currentViewPan
+
+		try:
+			#viewPan = Glyphs.font.currentTab.graphicView().visibleRect().origin
+			viewPan = Glyphs.font.currentTab.graphicView().visibleRect()
+			if str(currentViewPan) != str(viewPan):
+				currentViewPan = viewPan
+				self.activeViewPanChanged = True
+				return True
+			else:
+				self.activeViewPanChanged = False
+				return False
+		except:
+			pass # print traceback.format_exc()
+
+
+
+
 
 
 	def drawKammerakindRahmen(self, thisFont):
@@ -142,10 +197,23 @@ class SyncTool(ReporterPlugin):
 		'''
 
 
+
+	#========
+	# M A I N
+	#========
 	def foregroundInViewCoords(self, layer): # important to make the viewport (in drawKammerakindRahmen) work.
+
 		self.observeGlyphChange()
+		self.observeZoom()
+		self.observeViewPanning()
+
 		if self.activeGlyphChanged:
 			self.SyncEditViews()
+		if self.activeZoomChanged:
+			self.SyncEditViews()
+		if self.activeViewPanChanged:
+			self.SyncEditViews()
+
 
 		if layer.parent.parent == Glyphs.font:
 			self.drawKammerakindRahmen(layer.parent.parent)
