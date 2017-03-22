@@ -64,6 +64,7 @@ class SyncTool(ReporterPlugin):
 			doSpace = currentGraphicView.doSpacing()
 			thisSelection = currentGraphicView.textStorage().selectedRange()
 			currentVisibleRect = currentGraphicView.visibleRect()
+			currentPreviewHeight = thisTab.previewHeight
 
 			for otherFont in Glyphs.fonts:
 				if otherFont != Glyphs.font:
@@ -94,6 +95,7 @@ class SyncTool(ReporterPlugin):
 					
 					normalizedText = "/" + "/".join([x for x in normalizedText])
 					iTab.text = normalizedText
+					iTab.previewHeight = currentPreviewHeight
 
 					# SET CARET INTO POSITION, 2 Step process
 					# Step A: Catch the caret position
