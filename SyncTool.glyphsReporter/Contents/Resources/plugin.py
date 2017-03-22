@@ -83,10 +83,12 @@ class SyncTool(ReporterPlugin):
 					normalizedText = "/" + "/".join([x for x in normalizedText])
 					iTab.text = normalizedText
 
-					# SET CARET INTO POSITION
-					# otherFont.tool = "TextTool" # switch to tt to trigger glyphs view to focus
+					# SET CARET INTO POSITION, 2 Step process
+					# Step A: Catch the caret position
+					otherFont.tool = "TextTool" # switch to tt to trigger glyphs view to focus
 					otherView.textStorage().setSelectedRange_(thisSelection)
-					# otherFont.tool = otherFontLastTool
+					otherFont.tool = otherFontLastTool
+					# Step B: Scroll to view if possible
 					otherView.scrollRectToVisible_(currentVisibleRect) # new as proposed by WEI. Thanks!
 
 		except:
