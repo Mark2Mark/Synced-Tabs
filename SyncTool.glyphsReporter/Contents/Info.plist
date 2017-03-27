@@ -5,29 +5,29 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleDisplayName</key>
-	<string>SyncTool</string>
+	<string>SyncedTabs</string>
 	<key>CFBundleExecutable</key>
 	<string>plugin</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.markfromberg.SyncTool</string>
+	<string>com.markfromberg.SyncedTabs</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>SyncTool</string>
+	<string>SyncedTabs</string>
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1.1</string>
+	<string>1.2</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.1.0</string>
+	<string>1.2.0</string>
 	<key>UpdateFeedURL</key>
 	<string></string>
 	<key>productPageURL</key>
 	<string></string>
 	<key>productReleaseNotes</key>
-	<string>More observers: Zoom and Panning the View</string>
+	<string>minor bugfixes</string>
 	<key>LSHasLocalizedDisplayName</key>
 	<false/>
 	<key>NSAppleScriptEnabled</key>
@@ -37,7 +37,7 @@
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
-	<string>SyncTool</string>
+	<string>SyncedTabs</string>
 	<key>PyMainFileNames</key>
 	<array>
 		<string>__boot__</string>

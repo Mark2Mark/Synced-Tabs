@@ -34,10 +34,10 @@ currentViewPan = None
 
 newLine = "\n"
 
-class SyncTool(ReporterPlugin):
+class SyncedTabs(ReporterPlugin):
 
 	def settings(self):
-		self.name = 'SyncTool'
+		self.name = 'SyncedTabs'
 		self.menuName = Glyphs.localize({'en': u'Synced Tabs'})
 		#self.Glyphs = NSApplication.sharedApplication()
 		
@@ -131,6 +131,7 @@ class SyncTool(ReporterPlugin):
 			lName = str(layer.parent.name)			
 			if str(currentGlyphName) != lName:
 				currentGlyphName = lName
+				self.activeGlyphChanged = True
 				
 			else:
 				### If same glyph, check if position in tab (Otherwise changing from one /b to another in one tab wont trigger)
