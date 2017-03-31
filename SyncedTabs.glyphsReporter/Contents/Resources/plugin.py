@@ -211,11 +211,7 @@ class SyncedTabs(ReporterPlugin):
 		self.observeZoom()
 		self.observeViewPanning()
 
-		if self.activeGlyphChanged:
-			self.SyncEditViews()
-		if self.activeZoomChanged:
-			self.SyncEditViews()
-		if self.activeViewPanChanged:
+		if self.activeGlyphChanged or self.activeZoomChanged or self.activeViewPanChanged:
 			self.SyncEditViews()
 
 
