@@ -34,6 +34,7 @@ currentGlyphName = ""
 currentCaretPosition = None
 currentZoom = None
 currentViewPan = None
+currentMasterIndex = 0
 
 newLine = "\n"
 
@@ -49,6 +50,7 @@ class SyncedTabs(ReporterPlugin):
 		self.activeGlyphChanged = False
 		self.activeZoomChanged = False
 		self.activeViewPanChanged = False
+		self.activeMasterIndexChanged = False
 
 
 	def SyncEditViews(self):
@@ -73,10 +75,14 @@ class SyncedTabs(ReporterPlugin):
 				if otherFont != Glyphs.font:
 					otherFontLastTool = otherFont.tool
 					iTab = otherFont.tabs[-1]
-					if mindex <= len(otherFont.masters):
+					#if mindex <= len(otherFont.masters):
+					try:
+						#print font0.parent.windowController().masterIndex(), otherFont.parent.windowController().masterIndex()
 						iTab.setMasterIndex_(mindex)
-					if font0.parent.windowController().masterIndex() != otherFont.parent.windowController().masterIndex():
+					#if font0.parent.windowController().masterIndex() != otherFont.parent.windowController().masterIndex():
 						otherFont.parent.windowController().setMasterIndex_(mindex)
+					except: pass # print traceback.format_exc()
+
 					otherView = iTab.graphicView()
 
 					if otherView.scale() != thisScale:
@@ -187,6 +193,23 @@ class SyncedTabs(ReporterPlugin):
 			pass # print traceback.format_exc()
 
 
+	def observeMasterChange(self):
+		global currentMasterIndex
+
+		try:
+			mIn = Glyphs.font.parent.windowController().masterIndex()
+			if currentMasterIndex != mIn:
+				currentMasterIndex = mIn
+				self.activeMasterIndexChanged = True
+				print "master changed"
+				return True
+			else:
+				self.activeMasterIndexChanged = False
+				return False
+		except:
+			pass # print traceback.format_exc()
+
+
 	#def observeMasterSwitch(self):
 	## Perhaps not nessecary anymore? Seems to update already ...
 
@@ -232,8 +255,9 @@ class SyncedTabs(ReporterPlugin):
 		self.observeGlyphChange()
 		self.observeZoom()
 		self.observeViewPanning()
+		self.observeMasterChange()
 
-		if self.activeGlyphChanged or self.activeZoomChanged or self.activeViewPanChanged:
+		if self.activeGlyphChanged or self.activeZoomChanged or self.activeViewPanChanged or self.activeMasterIndexChanged:
 			self.SyncEditViews()
 
 
