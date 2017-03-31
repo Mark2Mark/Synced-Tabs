@@ -42,7 +42,7 @@ class SyncedTabs(ReporterPlugin):
 		#self.Glyphs = NSApplication.sharedApplication()
 		
 		# For the Observers
-		#------------------		
+		#------------------
 		self.activeGlyphChanged = False
 		self.activeZoomChanged = False
 		self.activeViewPanChanged = False
@@ -76,31 +76,32 @@ class SyncedTabs(ReporterPlugin):
 					otherView.setScale_(thisScale)
 					otherView.setDoKerning_(doKern)
 					otherView.setDoSpacing_(doSpace)
-					
-					## verify glyph in font
-					normalizedText, currentLayers = [], []
-					for l in thisTab.layers:
-						try:
-							currentLayers.append(l.parent.name)
-						except:
-							currentLayers.append(newLine)
-					for g in currentLayers: # for g in thisTab.text:
-						if g != newLine:
-							if g in otherFont.glyphs:
-								normalizedText.append(g)
+					if self.activeGlyphChanged: # dont rest the content all the time. 
+						# TODO: fix layer synconisation for views that where nevers synced. 
+						## verify glyph in font
+						normalizedText, currentLayers = [], []
+						for l in thisTab.layers:
+							try:
+								currentLayers.append(l.parent.name)
+							except:
+								currentLayers.append(newLine)
+						for g in currentLayers: # for g in thisTab.text:
+							if g != newLine:
+								if g in otherFont.glyphs:
+									normalizedText.append(g)
+								else:
+									normalizedText.append("space")
 							else:
-								normalizedText.append("space")
-						else:
-							normalizedText.append(newLine)
+								normalizedText.append(newLine)
 					
-					normalizedText = "/" + "/".join([x for x in normalizedText])
-					iTab.text = normalizedText
-					iTab.previewHeight = currentPreviewHeight
+						normalizedText = "/" + "/".join([x for x in normalizedText])
+						iTab.text = normalizedText
+						iTab.previewHeight = currentPreviewHeight
 
-					# SET CARET INTO POSITION, 2 Step process
-					# Step A: Catch the caret position
-					otherFont.tool = "TextTool" # switch to tt to trigger glyphs view to focus
-					otherView.textStorage().setSelectedRange_(thisSelection)
+						# SET CARET INTO POSITION, 2 Step process
+						# Step A: Catch the caret position
+						otherFont.tool = "TextTool" # switch to tt to trigger glyphs view to focus
+						otherView.textStorage().setSelectedRange_(thisSelection)
 					otherFont.tool = otherFontLastTool
 					# Step B: Scroll to view if possible
 					otherView.scrollRectToVisible_(currentVisibleRect) # new as proposed by WEI. Thanks!
@@ -128,7 +129,7 @@ class SyncedTabs(ReporterPlugin):
 
 		try:
 			layer = Glyphs.font.selectedLayers[0] #Glyphs.orderedDocuments()[0].font.selectedLayers[0]
-			lName = str(layer.parent.name)			
+			lName = str(layer.parent.name)
 			if str(currentGlyphName) != lName:
 				currentGlyphName = lName
 				self.activeGlyphChanged = True
@@ -211,11 +212,7 @@ class SyncedTabs(ReporterPlugin):
 		self.observeZoom()
 		self.observeViewPanning()
 
-		if self.activeGlyphChanged:
-			self.SyncEditViews()
-		if self.activeZoomChanged:
-			self.SyncEditViews()
-		if self.activeViewPanChanged:
+		if self.activeGlyphChanged or self.activeZoomChanged or self.activeViewPanChanged:
 			self.SyncEditViews()
 
 
