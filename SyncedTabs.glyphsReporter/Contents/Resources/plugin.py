@@ -110,10 +110,10 @@ class SyncedTabs(ReporterPlugin):
 						otherView.textStorage().setSelectedRange_(thisSelection)
 					otherFont.tool = otherFontLastTool
 
-					if iTab.previewHeight != currentPreviewHeight:
-						iTab.previewHeight = currentPreviewHeight
+					# if iTab.previewHeight != currentPreviewHeight:
+					iTab.previewHeight = currentPreviewHeight
 
-					
+
 					# Step B: Scroll to view if possible
 					otherView.scrollRectToVisible_(currentVisibleRect) # new as proposed by WEI. Thanks!
 
