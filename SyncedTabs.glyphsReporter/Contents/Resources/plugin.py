@@ -42,7 +42,7 @@ class SyncedTabs(ReporterPlugin):
 		#self.Glyphs = NSApplication.sharedApplication()
 		
 		# For the Observers
-		#------------------		
+		#------------------
 		self.activeGlyphChanged = False
 		self.activeZoomChanged = False
 		self.activeViewPanChanged = False
@@ -128,7 +128,7 @@ class SyncedTabs(ReporterPlugin):
 
 		try:
 			layer = Glyphs.font.selectedLayers[0] #Glyphs.orderedDocuments()[0].font.selectedLayers[0]
-			lName = str(layer.parent.name)			
+			lName = str(layer.parent.name)
 			if str(currentGlyphName) != lName:
 				currentGlyphName = lName
 				self.activeGlyphChanged = True
