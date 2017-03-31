@@ -104,14 +104,16 @@ class SyncedTabs(ReporterPlugin):
 					
 						normalizedText = "/" + "/".join([x for x in normalizedText])
 						iTab.text = normalizedText
-						#if iTab.previewHeight != currentPreviewHeight:
-						iTab.previewHeight = currentPreviewHeight
-
 						# SET CARET INTO POSITION, 2 Step process
 						# Step A: Catch the caret position
 						otherFont.tool = "TextTool" # switch to tt to trigger glyphs view to focus
 						otherView.textStorage().setSelectedRange_(thisSelection)
 					otherFont.tool = otherFontLastTool
+
+					if iTab.previewHeight != currentPreviewHeight:
+						iTab.previewHeight = currentPreviewHeight
+
+					
 					# Step B: Scroll to view if possible
 					otherView.scrollRectToVisible_(currentVisibleRect) # new as proposed by WEI. Thanks!
 
