@@ -104,8 +104,8 @@ class SyncedTabs(ReporterPlugin):
 					
 						normalizedText = "/" + "/".join([x for x in normalizedText])
 						iTab.text = normalizedText
-						if iTab.previewHeight != currentPreviewHeight:
-							iTab.previewHeight = currentPreviewHeight
+						#if iTab.previewHeight != currentPreviewHeight:
+						iTab.previewHeight = currentPreviewHeight
 
 						# SET CARET INTO POSITION, 2 Step process
 						# Step A: Catch the caret position
