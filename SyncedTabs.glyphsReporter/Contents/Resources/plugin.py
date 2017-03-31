@@ -108,7 +108,15 @@ class SyncedTabs(ReporterPlugin):
 						# Step A: Catch the caret position
 						otherFont.tool = "TextTool" # switch to tt to trigger glyphs view to focus
 						otherView.textStorage().setSelectedRange_(thisSelection)
+
+					## A)
 					otherFont.tool = otherFontLastTool
+					## B) **UC**
+					# if font0.parent.windowController().toolTempSelection():
+					# 	otherFont.tool = 'SelectTool' 
+					# else:
+					# 	otherFont.tool = otherFontLastTool
+
 
 					# if iTab.previewHeight != currentPreviewHeight:
 					iTab.previewHeight = currentPreviewHeight
