@@ -25,6 +25,8 @@
 from GlyphsApp.plugins import *
 import traceback
 
+version = "1.3"
+
 # For the Observers
 #------------------
 currentGlyphName = ""
@@ -73,10 +75,15 @@ class SyncedTabs(ReporterPlugin):
 					if mindex <= len(otherFont.masters):
 						iTab.setMasterIndex_(mindex)
 					otherView = iTab.graphicView()
-					otherView.setScale_(thisScale)
-					otherView.setDoKerning_(doKern)
-					otherView.setDoSpacing_(doSpace)
-					if self.activeGlyphChanged: # dont rest the content all the time. 
+
+					if otherView.scale() != thisScale:
+						otherView.setScale_(thisScale)
+					if otherView.doKerning() != doKern:
+						otherView.setDoKerning_(doKern)
+					if otherView.doSpacing() != doSpace:
+						otherView.setDoSpacing_(doSpace)
+
+					if self.activeGlyphChanged: # dont reset the content all the time. 
 						# TODO: fix layer synconisation for views that where nevers synced. 
 						## verify glyph in font
 						normalizedText, currentLayers = [], []
@@ -96,7 +103,8 @@ class SyncedTabs(ReporterPlugin):
 					
 						normalizedText = "/" + "/".join([x for x in normalizedText])
 						iTab.text = normalizedText
-						iTab.previewHeight = currentPreviewHeight
+						if iTab.previewHeight != currentPreviewHeight:
+							iTab.previewHeight = currentPreviewHeight
 
 						# SET CARET INTO POSITION, 2 Step process
 						# Step A: Catch the caret position
