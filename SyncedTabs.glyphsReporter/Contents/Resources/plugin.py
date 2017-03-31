@@ -76,31 +76,32 @@ class SyncedTabs(ReporterPlugin):
 					otherView.setScale_(thisScale)
 					otherView.setDoKerning_(doKern)
 					otherView.setDoSpacing_(doSpace)
-					
-					## verify glyph in font
-					normalizedText, currentLayers = [], []
-					for l in thisTab.layers:
-						try:
-							currentLayers.append(l.parent.name)
-						except:
-							currentLayers.append(newLine)
-					for g in currentLayers: # for g in thisTab.text:
-						if g != newLine:
-							if g in otherFont.glyphs:
-								normalizedText.append(g)
+					if self.activeGlyphChanged: # dont rest the content all the time. 
+						# TODO: fix layer synconisation for views that where nevers synced. 
+						## verify glyph in font
+						normalizedText, currentLayers = [], []
+						for l in thisTab.layers:
+							try:
+								currentLayers.append(l.parent.name)
+							except:
+								currentLayers.append(newLine)
+						for g in currentLayers: # for g in thisTab.text:
+							if g != newLine:
+								if g in otherFont.glyphs:
+									normalizedText.append(g)
+								else:
+									normalizedText.append("space")
 							else:
-								normalizedText.append("space")
-						else:
-							normalizedText.append(newLine)
+								normalizedText.append(newLine)
 					
-					normalizedText = "/" + "/".join([x for x in normalizedText])
-					iTab.text = normalizedText
-					iTab.previewHeight = currentPreviewHeight
+						normalizedText = "/" + "/".join([x for x in normalizedText])
+						iTab.text = normalizedText
+						iTab.previewHeight = currentPreviewHeight
 
-					# SET CARET INTO POSITION, 2 Step process
-					# Step A: Catch the caret position
-					otherFont.tool = "TextTool" # switch to tt to trigger glyphs view to focus
-					otherView.textStorage().setSelectedRange_(thisSelection)
+						# SET CARET INTO POSITION, 2 Step process
+						# Step A: Catch the caret position
+						otherFont.tool = "TextTool" # switch to tt to trigger glyphs view to focus
+						otherView.textStorage().setSelectedRange_(thisSelection)
 					otherFont.tool = otherFontLastTool
 					# Step B: Scroll to view if possible
 					otherView.scrollRectToVisible_(currentVisibleRect) # new as proposed by WEI. Thanks!
