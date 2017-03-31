@@ -18,6 +18,7 @@
 #	TODO: Make the same check for placeholder Layer as it is implemented for the newLine (GSControlLayer)
 #	TODO: Add more observers
 #	TODO: Keep Tools in sync as well?
+#	TODO: Keep different Layers in sync (e.g. Show all Masters)
 #
 #
 ###########################################################################################################
