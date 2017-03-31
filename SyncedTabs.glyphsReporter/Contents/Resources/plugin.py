@@ -75,6 +75,8 @@ class SyncedTabs(ReporterPlugin):
 					iTab = otherFont.tabs[-1]
 					if mindex <= len(otherFont.masters):
 						iTab.setMasterIndex_(mindex)
+					if font0.parent.windowController().masterIndex() != otherFont.parent.windowController().masterIndex():
+						otherFont.parent.windowController().setMasterIndex_(mindex)
 					otherView = iTab.graphicView()
 
 					if otherView.scale() != thisScale:
