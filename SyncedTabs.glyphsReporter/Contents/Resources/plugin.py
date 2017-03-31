@@ -201,7 +201,6 @@ class SyncedTabs(ReporterPlugin):
 			if currentMasterIndex != mIn:
 				currentMasterIndex = mIn
 				self.activeMasterIndexChanged = True
-				print "master changed"
 				return True
 			else:
 				self.activeMasterIndexChanged = False
