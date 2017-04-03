@@ -85,6 +85,7 @@ class SyncedTabs(ReporterPlugin):
 			currentVisibleRect = currentGraphicView.visibleRect()
 			currentPreviewHeight = thisTab.previewHeight
 
+
 			for otherFont in Glyphs.fonts:
 				if otherFont != Glyphs.font:
 					otherFontLastTool = otherFont.tool
@@ -136,11 +137,30 @@ class SyncedTabs(ReporterPlugin):
 						otherFont.tool = font0.tool
 					else:
 						otherFont.tool = otherFontLastTool
+
 					## B) **UC**
 					# if font0.parent.windowController().toolTempSelection():
 					# 	otherFont.tool = 'SelectTool' 
 					# else:
 					# 	otherFont.tool = otherFontLastTool
+
+
+					## C)
+					# if doSyncTools:
+					# 	if font0.parent.windowController().toolTempSelection().title() == "Hand":
+					# 		otherFont.tool = "HandTool"
+					# 		print "A Hand Tool"
+					# 	else:
+					# 		otherFont.tool = font0.tool
+					# 		print "A Font0 Tool"
+					# else:
+					# 	if font0.parent.windowController().toolTempSelection().title() == "Hand":
+					# 		otherFont.tool = "HandTool"
+					# 		print "B Hand Tool"
+					# 	else:
+					# 		otherFont.tool = otherFontLastTool
+					# 		print "B Font0 Tool"							
+
 
 
 					# if iTab.previewHeight != currentPreviewHeight:
