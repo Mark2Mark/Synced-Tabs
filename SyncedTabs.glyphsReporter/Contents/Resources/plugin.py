@@ -88,87 +88,89 @@ class SyncedTabs(ReporterPlugin):
 
 			for otherFont in Glyphs.fonts:
 				if otherFont != Glyphs.font:
-					otherFontLastTool = otherFont.tool
-					iTab = otherFont.tabs[-1]
-					#if mindex <= len(otherFont.masters):
-					try:
-						#print font0.parent.windowController().masterIndex(), otherFont.parent.windowController().masterIndex()
-						iTab.setMasterIndex_(mindex)
-					#if font0.parent.windowController().masterIndex() != otherFont.parent.windowController().masterIndex():
-						otherFont.parent.windowController().setMasterIndex_(mindex)
-					except: pass # print traceback.format_exc()
+					if otherFont.parent.windowForSheet().isVisible(): # Only apply to visible Fonts
 
-					otherView = iTab.graphicView()
+						otherFontLastTool = otherFont.tool
+						iTab = otherFont.tabs[-1]
+						#if mindex <= len(otherFont.masters):
+						try:
+							#print font0.parent.windowController().masterIndex(), otherFont.parent.windowController().masterIndex()
+							iTab.setMasterIndex_(mindex)
+						#if font0.parent.windowController().masterIndex() != otherFont.parent.windowController().masterIndex():
+							otherFont.parent.windowController().setMasterIndex_(mindex)
+						except: pass # print traceback.format_exc()
 
-					if otherView.scale() != thisScale:
-						otherView.setScale_(thisScale)
-					if otherView.doKerning() != doKern:
-						otherView.setDoKerning_(doKern)
-					if otherView.doSpacing() != doSpace:
-						otherView.setDoSpacing_(doSpace)
+						otherView = iTab.graphicView()
 
-					if self.activeGlyphChanged: # dont reset the content all the time. 
-						# TODO: fix layer synconisation for views that where nevers synced. 
-						## verify glyph in font
-						normalizedText, currentLayers = [], []
-						for l in thisTab.layers:
-							try:
-								currentLayers.append(l.parent.name)
-							except:
-								currentLayers.append(newLine)
-						for g in currentLayers: # for g in thisTab.text:
-							if g != newLine:
-								if g in otherFont.glyphs:
-									normalizedText.append(g)
+						if otherView.scale() != thisScale:
+							otherView.setScale_(thisScale)
+						if otherView.doKerning() != doKern:
+							otherView.setDoKerning_(doKern)
+						if otherView.doSpacing() != doSpace:
+							otherView.setDoSpacing_(doSpace)
+
+						if self.activeGlyphChanged: # dont reset the content all the time. 
+							# TODO: fix layer synconisation for views that where nevers synced. 
+							## verify glyph in font
+							normalizedText, currentLayers = [], []
+							for l in thisTab.layers:
+								try:
+									currentLayers.append(l.parent.name)
+								except:
+									currentLayers.append(newLine)
+							for g in currentLayers: # for g in thisTab.text:
+								if g != newLine:
+									if g in otherFont.glyphs:
+										normalizedText.append(g)
+									else:
+										normalizedText.append("space")
 								else:
-									normalizedText.append("space")
-							else:
-								normalizedText.append(newLine)
-					
-						normalizedText = "/" + "/".join([x for x in normalizedText])
-						iTab.text = normalizedText
-						# SET CARET INTO POSITION, 2 Step process
-						# Step A: Catch the caret position
-						otherFont.tool = "TextTool" # switch to tt to trigger glyphs view to focus
-						otherView.textStorage().setSelectedRange_(thisSelection)
+									normalizedText.append(newLine)
+						
+							normalizedText = "/" + "/".join([x for x in normalizedText])
+							iTab.text = normalizedText
+							# SET CARET INTO POSITION, 2 Step process
+							# Step A: Catch the caret position
+							otherFont.tool = "TextTool" # switch to tt to trigger glyphs view to focus
+							otherView.textStorage().setSelectedRange_(thisSelection)
 
-					## A)
-					if doSyncTools:
-						otherFont.tool = font0.tool
-					else:
-						otherFont.tool = otherFontLastTool
+						## A)
+						if doSyncTools:
+							otherFont.tool = font0.tool
+						else:
+							otherFont.tool = otherFontLastTool
 
-					## B) **UC**
-					# if font0.parent.windowController().toolTempSelection():
-					# 	otherFont.tool = 'SelectTool' 
-					# else:
-					# 	otherFont.tool = otherFontLastTool
+						## B) **UC**
+						# if font0.parent.windowController().toolTempSelection():
+						# 	otherFont.tool = 'SelectTool' 
+						# else:
+						# 	otherFont.tool = otherFontLastTool
 
 
-					## C)
-					# if doSyncTools:
-					# 	if font0.parent.windowController().toolTempSelection().title() == "Hand":
-					# 		otherFont.tool = "HandTool"
-					# 		print "A Hand Tool"
-					# 	else:
-					# 		otherFont.tool = font0.tool
-					# 		print "A Font0 Tool"
-					# else:
-					# 	if font0.parent.windowController().toolTempSelection().title() == "Hand":
-					# 		otherFont.tool = "HandTool"
-					# 		print "B Hand Tool"
-					# 	else:
-					# 		otherFont.tool = otherFontLastTool
-					# 		print "B Font0 Tool"							
+						## C)
+						# if doSyncTools:
+						# 	if font0.parent.windowController().toolTempSelection().title() == "Hand":
+						# 		otherFont.tool = "HandTool"
+						# 		print "A Hand Tool"
+						# 	else:
+						# 		otherFont.tool = font0.tool
+						# 		print "A Font0 Tool"
+						# else:
+						# 	if font0.parent.windowController().toolTempSelection().title() == "Hand":
+						# 		otherFont.tool = "HandTool"
+						# 		print "B Hand Tool"
+						# 	else:
+						# 		otherFont.tool = otherFontLastTool
+						# 		print "B Font0 Tool"							
 
 
 
-					# if iTab.previewHeight != currentPreviewHeight:
-					iTab.previewHeight = currentPreviewHeight
+						# if iTab.previewHeight != currentPreviewHeight:
+						iTab.previewHeight = currentPreviewHeight
 
 
-					# Step B: Scroll to view if possible
-					otherView.scrollRectToVisible_(currentVisibleRect) # new as proposed by WEI. Thanks!
+						# Step B: Scroll to view if possible
+						otherView.scrollRectToVisible_(currentVisibleRect) # new as proposed by WEI. Thanks!
 
 		except:
 			pass # print traceback.format_exc()
