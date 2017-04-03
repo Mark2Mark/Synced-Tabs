@@ -13,6 +13,8 @@
 #	> Keep all tabs in all open fonts in sync with the currently active tab.
 #	> Set a /space in other tabs, when a certain glyph is not in these fonts.
 #	> Handles newline characters.
+#	> PREFERENCES:
+#		+ change option to sync Tools: `Glyphs.defaults["com.markfromberg.syncedTabs.doSyncTools"] = True/False` in Macro panel
 #
 #	TODO: selectedLayerOrigin [https://docu.glyphsapp.com/#selectedLayerOrigin]
 #	TODO: Make the same check for placeholder Layer as it is implemented for the newLine (GSControlLayer)
@@ -26,7 +28,10 @@
 from GlyphsApp.plugins import *
 import traceback
 
-version = "1.3"
+version = "1.4"
+vID = "com.markfromberg.syncedTabs" # vendorID
+
+doSyncTools = False
 
 # For the Observers
 #------------------
@@ -35,6 +40,7 @@ currentCaretPosition = None
 currentZoom = None
 currentViewPan = None
 currentMasterIndex = 0
+currentTool = None
 
 newLine = "\n"
 
@@ -51,12 +57,20 @@ class SyncedTabs(ReporterPlugin):
 		self.activeZoomChanged = False
 		self.activeViewPanChanged = False
 		self.activeMasterIndexChanged = False
+		self.activeToolChanged = False
 
 
 	def SyncEditViews(self):
 		'''
 		Based on the code from Tosche : `Sync Edit Views.py` @Github
 		'''
+		try:
+			if Glyphs.defaults["%s.doSyncTools" % vID] == True:
+				doSyncTools = True
+			else:
+				doSyncTools = False
+		except: pass
+
 
 		try:
 			font0 = Glyphs.font
@@ -118,7 +132,10 @@ class SyncedTabs(ReporterPlugin):
 						otherView.textStorage().setSelectedRange_(thisSelection)
 
 					## A)
-					otherFont.tool = otherFontLastTool
+					if doSyncTools:
+						otherFont.tool = font0.tool
+					else:
+						otherFont.tool = otherFontLastTool
 					## B) **UC**
 					# if font0.parent.windowController().toolTempSelection():
 					# 	otherFont.tool = 'SelectTool' 
@@ -209,6 +226,24 @@ class SyncedTabs(ReporterPlugin):
 			pass # print traceback.format_exc()
 
 
+
+	def observeToolChange(self):
+		global currentTool
+
+		try:
+			t = Glyphs.font.tool
+			if currentTool != t:
+				currentTool = t
+				self.activeToolChanged = True
+				return True
+			else:
+				self.activeToolChanged = False
+				return False
+		except:
+			pass # print traceback.format_exc()
+
+
+
 	#def observeMasterSwitch(self):
 	## Perhaps not nessecary anymore? Seems to update already ...
 
@@ -255,8 +290,9 @@ class SyncedTabs(ReporterPlugin):
 		self.observeZoom()
 		self.observeViewPanning()
 		self.observeMasterChange()
+		self.observeToolChange()
 
-		if self.activeGlyphChanged or self.activeZoomChanged or self.activeViewPanChanged or self.activeMasterIndexChanged:
+		if self.activeGlyphChanged or self.activeZoomChanged or self.activeViewPanChanged or self.activeMasterIndexChanged or self.activeToolChanged:
 			self.SyncEditViews()
 
 
