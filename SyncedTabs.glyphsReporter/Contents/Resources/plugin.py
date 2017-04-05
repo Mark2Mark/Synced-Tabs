@@ -85,7 +85,7 @@ class SyncedTabs(ReporterPlugin):
 			thisScale = currentGraphicView.scale()
 			doKern = currentGraphicView.doKerning()
 			doSpace = currentGraphicView.doSpacing()
-			thisSelection = currentGraphicView.textStorage().selectedRange()
+			thisSelection = currentGraphicView.textStorage().selectedRange() 
 			currentVisibleRect = currentGraphicView.visibleRect()
 			currentPreviewHeight = thisTab.previewHeight
 
@@ -180,7 +180,7 @@ class SyncedTabs(ReporterPlugin):
 						otherView.scrollRectToVisible_(currentVisibleRect) # new as proposed by WEI. Thanks!
 
 		except:
-			pass # print traceback.format_exc()
+			print traceback.format_exc()
 
 
 
@@ -200,8 +200,15 @@ class SyncedTabs(ReporterPlugin):
 		global currentGlyphName
 		global currentCaretPosition
 
+		ff = Glyphs.font
+
+		# tabTextLength = len(ff.currentTab.layers)
+		# tabTextCaretPos = ff.currentTab.graphicView().textStorage().selectedRange().location
+		# print tabTextLength == tabTextCaretPos # caret is at the very end
+		layer = ff.selectedLayers[0] #Glyphs.orderedDocuments()[0].font.selectedLayers[0]
+
+
 		try:
-			layer = Glyphs.font.selectedLayers[0] #Glyphs.orderedDocuments()[0].font.selectedLayers[0]
 			lName = str(layer.parent.name)
 			if str(currentGlyphName) != lName:
 				currentGlyphName = lName
@@ -222,6 +229,7 @@ class SyncedTabs(ReporterPlugin):
 				return False
 		except:
 			pass # print traceback.format_exc()
+
 
 
 
