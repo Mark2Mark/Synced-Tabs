@@ -22,6 +22,10 @@
 #	TODO: Keep Tools in sync as well?
 #	TODO: Keep different Layers in sync (e.g. Show all Masters)
 #
+#	NOTES:
+#		+ There was a sneaky bug that looked like it sometimes wont sync from one to another font
+#		-> However, it was due to syncing into the last tab of the otherFont instead of the active one.
+#		-> This is solved now by alwys syncing into the currentTab of the otherFont (see below at `*)`)
 #
 ###########################################################################################################
 
@@ -88,10 +92,13 @@ class SyncedTabs(ReporterPlugin):
 
 			for otherFont in Glyphs.fonts:
 				if otherFont != Glyphs.font:
+
 					if otherFont.parent.windowForSheet().isVisible(): # Only apply to visible Fonts
 
 						otherFontLastTool = otherFont.tool
-						iTab = otherFont.tabs[-1]
+						
+						iTab = otherFont.currentTab # = otherFont.tabs[-1] # *) not syncing the last tab, but the currentTab
+
 						#if mindex <= len(otherFont.masters):
 						try:
 							#print font0.parent.windowController().masterIndex(), otherFont.parent.windowController().masterIndex()
@@ -198,6 +205,7 @@ class SyncedTabs(ReporterPlugin):
 			lName = str(layer.parent.name)
 			if str(currentGlyphName) != lName:
 				currentGlyphName = lName
+				#print "Observe Glyph Change"
 				self.activeGlyphChanged = True
 				
 			else:
@@ -206,6 +214,7 @@ class SyncedTabs(ReporterPlugin):
 				if currentCaretPosition != position:
 					currentCaretPosition = position
 					self.activeGlyphChanged = True
+					#print "Observe Glyph Change"
 					return True
 				### End: optional, but needed for this plugin
 
@@ -224,6 +233,7 @@ class SyncedTabs(ReporterPlugin):
 			if str(currentZoom) != str(zoom):
 				currentZoom = zoom
 				self.activeZoomChanged = True
+				#print "Observe Zoom Change"
 				return True
 			else:
 				self.activeZoomChanged = False
@@ -240,6 +250,7 @@ class SyncedTabs(ReporterPlugin):
 			if currentMasterIndex != mIn:
 				currentMasterIndex = mIn
 				self.activeMasterIndexChanged = True
+				#print "Observe Master Change"
 				return True
 			else:
 				self.activeMasterIndexChanged = False
@@ -257,6 +268,7 @@ class SyncedTabs(ReporterPlugin):
 			if currentTool != t:
 				currentTool = t
 				self.activeToolChanged = True
+				#print "Observe Tool Change"
 				return True
 			else:
 				self.activeToolChanged = False
@@ -278,6 +290,7 @@ class SyncedTabs(ReporterPlugin):
 			if str(currentViewPan) != str(viewPan):
 				currentViewPan = viewPan
 				self.activeViewPanChanged = True
+				#print "Observe Pan Change"
 				return True
 			else:
 				self.activeViewPanChanged = False
