@@ -17,7 +17,10 @@
 #		+ change option to sync Tools: `Glyphs.defaults["com.markfromberg.syncedTabs.doSyncTools"] = True/False` in Macro panel
 #
 #	TODO: selectedLayerOrigin [https://docu.glyphsapp.com/#selectedLayerOrigin]
-#	TODO: Make the same check for placeholder Layer as it is implemented for the newLine (GSControlLayer)
+#	TODO: Make the same check for placeholder Layer. Works different than it is implemented for the newLine (GSControlLayer)
+#			print Font.currentTab
+#			Font.newTab("abd/Placeholder a\nthis is") # <GSEditViewController abd/Placeholder a\nthis is>
+#			-> only the newLine is a <GSControlLayer "newline"> <objective-c class GSControlLayer at 0x10e595510>
 #	TODO: Add more observers
 #	TODO: Keep Tools in sync as well?
 #	TODO: Keep different Layers in sync (e.g. Show all Masters)
@@ -47,6 +50,7 @@ currentMasterIndex = 0
 currentTool = None
 
 newLine = "\n"
+placeholder = "/Placeholder "
 
 class SyncedTabs(ReporterPlugin):
 
