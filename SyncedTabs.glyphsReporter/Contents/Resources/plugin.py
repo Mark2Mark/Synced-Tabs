@@ -81,18 +81,17 @@ class SyncedTabs(ReporterPlugin):
 
 
 		try:
-			font0 = Glyphs.font
-			thisTab = font0.currentTab
-			thisMaster = font0.selectedFontMaster
-			mindex = thisTab.masterIndex()
-			currentGraphicView = thisTab.graphicView()
-			thisScale = currentGraphicView.scale()
-			doKern = currentGraphicView.doKerning()
-			doSpace = currentGraphicView.doSpacing()
-			thisSelection = currentGraphicView.textStorage().selectedRange() 
-			currentVisibleRect = currentGraphicView.visibleRect()
-			currentPreviewHeight = thisTab.previewHeight
-
+			sourceFont = Glyphs.font
+			sourceTab = sourceFont.currentTab
+			sourceMaster = sourceFont.selectedFontMaster
+			sourceMasterIndex = sourceTab.masterIndex()
+			sourceGraphicView = sourceTab.graphicView()
+			sourceScale = sourceGraphicView.scale()
+			sourceSelection = sourceGraphicView.textStorage().selectedRange() 
+			sourceVisibleRect = sourceGraphicView.visibleRect()
+			sourcePreviewHeight = sourceTab.previewHeight
+			doKern = sourceGraphicView.doKerning()
+			doSpace = sourceGraphicView.doSpacing()
 
 			for otherFont in Glyphs.fonts:
 				if otherFont != Glyphs.font:
@@ -101,20 +100,20 @@ class SyncedTabs(ReporterPlugin):
 
 						otherFontLastTool = otherFont.tool
 						
-						iTab = otherFont.currentTab # = otherFont.tabs[-1] # *) not syncing the last tab, but the currentTab
+						otherTab = otherFont.currentTab # = otherFont.tabs[-1] # *) not syncing the last tab, but the currentTab
 
-						#if mindex <= len(otherFont.masters):
+						#if sourceMasterIndex <= len(otherFont.masters):
 						try:
-							#print font0.parent.windowController().masterIndex(), otherFont.parent.windowController().masterIndex()
-							iTab.setMasterIndex_(mindex)
-						#if font0.parent.windowController().masterIndex() != otherFont.parent.windowController().masterIndex():
-							otherFont.parent.windowController().setMasterIndex_(mindex)
+							#print sourceFont.parent.windowController().masterIndex(), otherFont.parent.windowController().masterIndex()
+							otherTab.setMasterIndex_(sourceMasterIndex)
+						#if sourceFont.parent.windowController().masterIndex() != otherFont.parent.windowController().masterIndex():
+							otherFont.parent.windowController().setMasterIndex_(sourceMasterIndex)
 						except: pass # print traceback.format_exc()
 
-						otherView = iTab.graphicView()
+						otherView = otherTab.graphicView()
 
-						if otherView.scale() != thisScale:
-							otherView.setScale_(thisScale)
+						if otherView.scale() != sourceScale:
+							otherView.setScale_(sourceScale)
 						if otherView.doKerning() != doKern:
 							otherView.setDoKerning_(doKern)
 						if otherView.doSpacing() != doSpace:
@@ -124,12 +123,12 @@ class SyncedTabs(ReporterPlugin):
 							# TODO: fix layer synconisation for views that where nevers synced. 
 							## verify glyph in font
 							normalizedText, currentLayers = [], []
-							for l in thisTab.layers:
+							for l in sourceTab.layers:
 								try:
 									currentLayers.append(l.parent.name)
 								except:
 									currentLayers.append(newLine)
-							for g in currentLayers: # for g in thisTab.text:
+							for g in currentLayers: # for g in sourceTab.text:
 								if g != newLine:
 									if g in otherFont.glyphs:
 										normalizedText.append(g)
@@ -139,20 +138,20 @@ class SyncedTabs(ReporterPlugin):
 									normalizedText.append(newLine)
 						
 							normalizedText = "/" + "/".join([x for x in normalizedText])
-							iTab.text = normalizedText
+							otherTab.text = normalizedText
 							# SET CARET INTO POSITION, 2 Step process
 							# Step A: Catch the caret position
 							otherFont.tool = "TextTool" # switch to tt to trigger glyphs view to focus
-							otherView.textStorage().setSelectedRange_(thisSelection)
+							otherView.textStorage().setSelectedRange_(sourceSelection)
 
 						## A)
 						if doSyncTools:
-							otherFont.tool = font0.tool
+							otherFont.tool = sourceFont.tool
 						else:
 							otherFont.tool = otherFontLastTool
 
 						## B) **UC**
-						# if font0.parent.windowController().toolTempSelection():
+						# if sourceFont.parent.windowController().toolTempSelection():
 						# 	otherFont.tool = 'SelectTool' 
 						# else:
 						# 	otherFont.tool = otherFontLastTool
@@ -160,28 +159,28 @@ class SyncedTabs(ReporterPlugin):
 
 						## C)
 						# if doSyncTools:
-						# 	if font0.parent.windowController().toolTempSelection().title() == "Hand":
+						# 	if sourceFont.parent.windowController().toolTempSelection().title() == "Hand":
 						# 		otherFont.tool = "HandTool"
 						# 		print "A Hand Tool"
 						# 	else:
-						# 		otherFont.tool = font0.tool
-						# 		print "A Font0 Tool"
+						# 		otherFont.tool = sourceFont.tool
+						# 		print "A sourceFont Tool"
 						# else:
-						# 	if font0.parent.windowController().toolTempSelection().title() == "Hand":
+						# 	if sourceFont.parent.windowController().toolTempSelection().title() == "Hand":
 						# 		otherFont.tool = "HandTool"
 						# 		print "B Hand Tool"
 						# 	else:
 						# 		otherFont.tool = otherFontLastTool
-						# 		print "B Font0 Tool"							
+						# 		print "B sourceFont Tool"							
 
 
 
-						# if iTab.previewHeight != currentPreviewHeight:
-						iTab.previewHeight = currentPreviewHeight
+						# if otherTab.previewHeight != sourcePreviewHeight:
+						otherTab.previewHeight = sourcePreviewHeight
 
 
 						# Step B: Scroll to view if possible
-						otherView.scrollRectToVisible_(currentVisibleRect) # new as proposed by WEI. Thanks!
+						otherView.scrollRectToVisible_(sourceVisibleRect) # new as proposed by WEI. Thanks!
 
 		except:
 			print traceback.format_exc()
@@ -211,11 +210,10 @@ class SyncedTabs(ReporterPlugin):
 		# print tabTextLength == tabTextCaretPos # caret is at the very end
 		layer = ff.selectedLayers[0] #Glyphs.orderedDocuments()[0].font.selectedLayers[0]
 
-
 		try:
-			lName = str(layer.parent.name)
-			if str(currentGlyphName) != lName:
-				currentGlyphName = lName
+			thisGlyphName = str(layer.parent.name)
+			if str(currentGlyphName) != thisGlyphName:
+				currentGlyphName = thisGlyphName
 				#print "Observe Glyph Change"
 				self.activeGlyphChanged = True
 				
@@ -241,9 +239,9 @@ class SyncedTabs(ReporterPlugin):
 		global currentZoom
 
 		try:
-			zoom = Glyphs.font.currentTab.scale
-			if str(currentZoom) != str(zoom):
-				currentZoom = zoom
+			thisZoom = Glyphs.font.currentTab.scale
+			if str(currentZoom) != str(thisZoom):
+				currentZoom = thisZoom
 				self.activeZoomChanged = True
 				#print "Observe Zoom Change"
 				return True
@@ -258,9 +256,9 @@ class SyncedTabs(ReporterPlugin):
 		global currentMasterIndex
 
 		try:
-			mIn = Glyphs.font.parent.windowController().masterIndex()
-			if currentMasterIndex != mIn:
-				currentMasterIndex = mIn
+			thisMasterIndex = Glyphs.font.parent.windowController().masterIndex()
+			if currentMasterIndex != thisMasterIndex:
+				currentMasterIndex = thisMasterIndex
 				self.activeMasterIndexChanged = True
 				#print "Observe Master Change"
 				return True
@@ -276,9 +274,9 @@ class SyncedTabs(ReporterPlugin):
 		global currentTool
 
 		try:
-			t = Glyphs.font.tool
-			if currentTool != t:
-				currentTool = t
+			thisTool = Glyphs.font.tool
+			if currentTool != thisTool:
+				currentTool = thisTool
 				self.activeToolChanged = True
 				#print "Observe Tool Change"
 				return True
@@ -297,10 +295,10 @@ class SyncedTabs(ReporterPlugin):
 		global currentViewPan
 
 		try:
-			#viewPan = Glyphs.font.currentTab.graphicView().visibleRect().origin
-			viewPan = Glyphs.font.currentTab.graphicView().visibleRect()
-			if str(currentViewPan) != str(viewPan):
-				currentViewPan = viewPan
+			#thisViewPan = Glyphs.font.currentTab.graphicView().visibleRect().origin
+			thisViewPan = Glyphs.font.currentTab.graphicView().visibleRect()
+			if str(currentViewPan) != str(thisViewPan):
+				currentViewPan = thisViewPan
 				self.activeViewPanChanged = True
 				#print "Observe Pan Change"
 				return True
