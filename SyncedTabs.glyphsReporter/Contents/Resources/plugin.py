@@ -68,6 +68,17 @@ class SyncedTabs(ReporterPlugin):
 		self.activeToolChanged = False
 
 
+
+	def getSelectedRange(self):
+		# new in Glyphs 2.3 or 2.4
+		# https://forum.glyphsapp.com/t/selectedrange-stopped-working/7302
+		self.graphicView = self.Doc.windowController().activeEditViewController().graphicView()
+		Range = self.graphicView.selectedRange()
+		return Range
+		# Range = self.graphicView.selectedLayerRange()
+		# return Range
+
+
 	def SyncEditViews(self):
 		'''
 		Based on the code from Tosche : `Sync Edit Views.py` @Github
@@ -81,13 +92,14 @@ class SyncedTabs(ReporterPlugin):
 
 
 		try:
+			self.Doc = Glyphs.currentDocument
 			sourceFont = Glyphs.font
 			sourceTab = sourceFont.currentTab
 			sourceMaster = sourceFont.selectedFontMaster
 			sourceMasterIndex = sourceTab.masterIndex()
 			sourceGraphicView = sourceTab.graphicView()
 			sourceScale = sourceGraphicView.scale()
-			sourceSelection = sourceGraphicView.textStorage().selectedRange() 
+			sourceSelection = self.getSelectedRange() # sourceGraphicView.textStorage().selectedRange() 
 			sourceVisibleRect = sourceGraphicView.visibleRect()
 			sourcePreviewHeight = sourceTab.previewHeight
 			doKern = sourceGraphicView.doKerning()
@@ -142,7 +154,8 @@ class SyncedTabs(ReporterPlugin):
 							# SET CARET INTO POSITION, 2 Step process
 							# Step A: Catch the caret position
 							otherFont.tool = "TextTool" # switch to tt to trigger glyphs view to focus
-							otherView.textStorage().setSelectedRange_(sourceSelection)
+							# otherView.textStorage().setSelectedRange_(sourceSelection) # deprecated
+							otherView.setSelectedRange_(sourceSelection) # new
 
 						## A)
 						if doSyncTools:
@@ -219,7 +232,8 @@ class SyncedTabs(ReporterPlugin):
 				
 			else:
 				### If same glyph, check if position in tab (Otherwise changing from one /b to another in one tab wont trigger)
-				position = layer.parent.parent.currentTab.graphicView().textStorage().selectedRange()
+				# position = layer.parent.parent.currentTab.graphicView().textStorage().selectedRange() # deprecated
+				position = layer.parent.parent.currentTab.graphicView().selectedRange() # new
 				if currentCaretPosition != position:
 					currentCaretPosition = position
 					self.activeGlyphChanged = True
