@@ -17,7 +17,7 @@ When ever you need it, toggle `Show Synced Tabs` from the view menu or the [Ropo
 ### Examples
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/Mark2Mark/Synced-Tabs/master/Images/SynchedTabs_Gintronic_MarkFroemberg.gif" alt="Synched Tabs" height="">
+<img src="https://raw.githubusercontent.com/Mark2Mark/Synced-Tabs/master/Images/SyncedTabs_Gintronic_MarkFroemberg.gif" alt="Synched Tabs" height="">
 </p> 
 
 ##### Known Issues
