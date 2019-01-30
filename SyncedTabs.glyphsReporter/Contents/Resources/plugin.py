@@ -106,94 +106,95 @@ class SyncedTabs(ReporterPlugin):
 			doSpace = sourceGraphicView.doSpacing()
 
 			for otherFont in Glyphs.fonts:
-				if otherFont != Glyphs.font:
+				if otherFont == sourceFont:
+					continue
 
-					if otherFont.parent.windowForSheet().isVisible(): # Only apply to visible Fonts
+				if not otherFont.parent.windowForSheet().isVisible(): # Only apply to visible Fonts
+					continue
+				otherFontLastTool = otherFont.tool
+				
+				otherTab = otherFont.currentTab # = otherFont.tabs[-1] # *) not syncing the last tab, but the currentTab
 
-						otherFontLastTool = otherFont.tool
-						
-						otherTab = otherFont.currentTab # = otherFont.tabs[-1] # *) not syncing the last tab, but the currentTab
+				#if sourceMasterIndex <= len(otherFont.masters):
+				try:
+					#print sourceFont.parent.windowController().masterIndex(), otherFont.parent.windowController().masterIndex()
+					otherTab.setMasterIndex_(sourceMasterIndex)
+				#if sourceFont.parent.windowController().masterIndex() != otherFont.parent.windowController().masterIndex():
+					otherFont.parent.windowController().setMasterIndex_(sourceMasterIndex)
+				except: pass # print traceback.format_exc()
 
-						#if sourceMasterIndex <= len(otherFont.masters):
+				otherView = otherTab.graphicView()
+
+				if otherView.scale() != sourceScale:
+					otherView.setScale_(sourceScale)
+				if otherView.doKerning() != doKern:
+					otherView.setDoKerning_(doKern)
+				if otherView.doSpacing() != doSpace:
+					otherView.setDoSpacing_(doSpace)
+
+				if self.activeGlyphChanged: # dont reset the content all the time. 
+					# TODO: fix layer synconisation for views that where nevers synced. 
+					## verify glyph in font
+					normalizedText, currentLayers = [], []
+					for l in sourceTab.layers:
 						try:
-							#print sourceFont.parent.windowController().masterIndex(), otherFont.parent.windowController().masterIndex()
-							otherTab.setMasterIndex_(sourceMasterIndex)
-						#if sourceFont.parent.windowController().masterIndex() != otherFont.parent.windowController().masterIndex():
-							otherFont.parent.windowController().setMasterIndex_(sourceMasterIndex)
-						except: pass # print traceback.format_exc()
-
-						otherView = otherTab.graphicView()
-
-						if otherView.scale() != sourceScale:
-							otherView.setScale_(sourceScale)
-						if otherView.doKerning() != doKern:
-							otherView.setDoKerning_(doKern)
-						if otherView.doSpacing() != doSpace:
-							otherView.setDoSpacing_(doSpace)
-
-						if self.activeGlyphChanged: # dont reset the content all the time. 
-							# TODO: fix layer synconisation for views that where nevers synced. 
-							## verify glyph in font
-							normalizedText, currentLayers = [], []
-							for l in sourceTab.layers:
-								try:
-									currentLayers.append(l.parent.name)
-								except:
-									currentLayers.append(newLine)
-							for g in currentLayers: # for g in sourceTab.text:
-								if g != newLine:
-									if g in otherFont.glyphs:
-										normalizedText.append(g)
-									else:
-										normalizedText.append("space")
-								else:
-									normalizedText.append(newLine)
-						
-							normalizedText = "/" + "/".join([x for x in normalizedText])
-							otherTab.text = normalizedText
-							# SET CARET INTO POSITION, 2 Step process
-							# Step A: Catch the caret position
-							otherFont.tool = "TextTool" # switch to tt to trigger glyphs view to focus
-							# otherView.textStorage().setSelectedRange_(sourceSelection) # deprecated
-							otherView.setSelectedRange_(sourceSelection) # new
-
-						## A)
-						if doSyncTools:
-							otherFont.tool = sourceFont.tool
+							currentLayers.append(l.parent.name)
+						except:
+							currentLayers.append(newLine)
+					for g in currentLayers: # for g in sourceTab.text:
+						if g != newLine:
+							if g in otherFont.glyphs:
+								normalizedText.append(g)
+							else:
+								normalizedText.append("space")
 						else:
-							otherFont.tool = otherFontLastTool
+							normalizedText.append(newLine)
+				
+					normalizedText = "/" + "/".join([x for x in normalizedText])
+					otherTab.text = normalizedText
+					# SET CARET INTO POSITION, 2 Step process
+					# Step A: Catch the caret position
+					otherFont.tool = "TextTool" # switch to tt to trigger glyphs view to focus
+					# otherView.textStorage().setSelectedRange_(sourceSelection) # deprecated
+					otherView.setSelectedRange_(sourceSelection) # new
 
-						## B) **UC**
-						# if sourceFont.parent.windowController().toolTempSelection():
-						# 	otherFont.tool = 'SelectTool' 
-						# else:
-						# 	otherFont.tool = otherFontLastTool
+				## A)
+				if doSyncTools:
+					otherFont.tool = sourceFont.tool
+				else:
+					otherFont.tool = otherFontLastTool
 
-
-						## C)
-						# if doSyncTools:
-						# 	if sourceFont.parent.windowController().toolTempSelection().title() == "Hand":
-						# 		otherFont.tool = "HandTool"
-						# 		print "A Hand Tool"
-						# 	else:
-						# 		otherFont.tool = sourceFont.tool
-						# 		print "A sourceFont Tool"
-						# else:
-						# 	if sourceFont.parent.windowController().toolTempSelection().title() == "Hand":
-						# 		otherFont.tool = "HandTool"
-						# 		print "B Hand Tool"
-						# 	else:
-						# 		otherFont.tool = otherFontLastTool
-						# 		print "B sourceFont Tool"							
+				## B) **UC**
+				# if sourceFont.parent.windowController().toolTempSelection():
+				# 	otherFont.tool = 'SelectTool' 
+				# else:
+				# 	otherFont.tool = otherFontLastTool
 
 
+				## C)
+				# if doSyncTools:
+				# 	if sourceFont.parent.windowController().toolTempSelection().title() == "Hand":
+				# 		otherFont.tool = "HandTool"
+				# 		print "A Hand Tool"
+				# 	else:
+				# 		otherFont.tool = sourceFont.tool
+				# 		print "A sourceFont Tool"
+				# else:
+				# 	if sourceFont.parent.windowController().toolTempSelection().title() == "Hand":
+				# 		otherFont.tool = "HandTool"
+				# 		print "B Hand Tool"
+				# 	else:
+				# 		otherFont.tool = otherFontLastTool
+				# 		print "B sourceFont Tool"							
 
-						# if otherTab.previewHeight != sourcePreviewHeight:
-						otherTab.previewHeight = sourcePreviewHeight
 
 
-						# Step B: Scroll to view if possible
-						otherView.scrollRectToVisible_(sourceVisibleRect) # new as proposed by WEI. Thanks!
+				# if otherTab.previewHeight != sourcePreviewHeight:
+				otherTab.previewHeight = sourcePreviewHeight
+
+
+				# Step B: Scroll to view if possible
+				otherView.scrollRectToVisible_(sourceVisibleRect) # new as proposed by WEI. Thanks!
 
 		except:
 			print traceback.format_exc()
