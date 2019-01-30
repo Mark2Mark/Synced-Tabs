@@ -90,18 +90,17 @@ class SyncedTabs(ReporterPlugin):
 				doSyncTools = False
 		except: pass
 
-
 		try:
-			self.Doc = Glyphs.currentDocument
 			sourceFont = Glyphs.font
+			sourceMasterIndex = sourceFont.masterIndex
+			
 			sourceTab = sourceFont.currentTab
-			sourceMaster = sourceFont.selectedFontMaster
-			sourceMasterIndex = sourceTab.masterIndex()
-			sourceGraphicView = sourceTab.graphicView()
-			sourceScale = sourceGraphicView.scale()
-			sourceSelection = self.getSelectedRange() # sourceGraphicView.textStorage().selectedRange() 
-			sourceVisibleRect = sourceGraphicView.visibleRect()
+			sourceScale = sourceTab.scale
+			sourceVisibleRect = sourceTab.viewPort
 			sourcePreviewHeight = sourceTab.previewHeight
+			
+			sourceGraphicView = sourceTab.graphicView()
+			sourceSelection = sourceGraphicView.selectedRange()
 			doKern = sourceGraphicView.doKerning()
 			doSpace = sourceGraphicView.doSpacing()
 
@@ -111,29 +110,19 @@ class SyncedTabs(ReporterPlugin):
 
 				if not otherFont.parent.windowForSheet().isVisible(): # Only apply to visible Fonts
 					continue
+
 				otherFontLastTool = otherFont.tool
 				
-				otherTab = otherFont.currentTab # = otherFont.tabs[-1] # *) not syncing the last tab, but the currentTab
+				otherTab = otherFont.currentTab
 
-				#if sourceMasterIndex <= len(otherFont.masters):
 				try:
-					#print sourceFont.parent.windowController().masterIndex(), otherFont.parent.windowController().masterIndex()
-					otherTab.setMasterIndex_(sourceMasterIndex)
-				#if sourceFont.parent.windowController().masterIndex() != otherFont.parent.windowController().masterIndex():
-					otherFont.parent.windowController().setMasterIndex_(sourceMasterIndex)
-				except: pass # print traceback.format_exc()
+					otherFont.masterIndex = sourceMasterIndex
+				except:
+					pass # print traceback.format_exc()
 
 				otherView = otherTab.graphicView()
-
-				if otherView.scale() != sourceScale:
-					otherView.setScale_(sourceScale)
-				if otherView.doKerning() != doKern:
-					otherView.setDoKerning_(doKern)
-				if otherView.doSpacing() != doSpace:
-					otherView.setDoSpacing_(doSpace)
-
 				if self.activeGlyphChanged: # dont reset the content all the time. 
-					# TODO: fix layer synconisation for views that where nevers synced. 
+					# TODO: fix layer synconisation for views that where nevers synced.
 					## verify glyph in font
 					normalizedText, currentLayers = [], []
 					for l in sourceTab.layers:
@@ -152,12 +141,14 @@ class SyncedTabs(ReporterPlugin):
 				
 					normalizedText = "/" + "/".join([x for x in normalizedText])
 					otherTab.text = normalizedText
-					# SET CARET INTO POSITION, 2 Step process
-					# Step A: Catch the caret position
-					otherFont.tool = "TextTool" # switch to tt to trigger glyphs view to focus
-					# otherView.textStorage().setSelectedRange_(sourceSelection) # deprecated
-					otherView.setSelectedRange_(sourceSelection) # new
 
+				otherView.setSelectedRange_(sourceSelection)
+				otherTab.scale = sourceScale
+				if otherView.doKerning() != doKern:
+					otherView.setDoKerning_(doKern)
+				if otherView.doSpacing() != doSpace:
+					otherView.setDoSpacing_(doSpace)
+				
 				## A)
 				if doSyncTools:
 					otherFont.tool = sourceFont.tool
@@ -185,16 +176,14 @@ class SyncedTabs(ReporterPlugin):
 				# 		print "B Hand Tool"
 				# 	else:
 				# 		otherFont.tool = otherFontLastTool
-				# 		print "B sourceFont Tool"							
-
-
+				# 		print "B sourceFont Tool"
 
 				# if otherTab.previewHeight != sourcePreviewHeight:
 				otherTab.previewHeight = sourcePreviewHeight
 
-
 				# Step B: Scroll to view if possible
-				otherView.scrollRectToVisible_(sourceVisibleRect) # new as proposed by WEI. Thanks!
+				otherTab.viewPort = sourceVisibleRect
+				otherView.viewWillDraw()
 
 		except:
 			print traceback.format_exc()
