@@ -355,7 +355,7 @@ class SyncedTabs(ReporterPlugin):
 			self.SyncEditViews()
 
 
-		if layer.parent.parent == Glyphs.font:
+		if layer and layer.parent.parent == Glyphs.font:
 			self.drawKammerakindRahmen(layer.parent.parent)
 
 
