@@ -218,12 +218,14 @@ class SyncedTabs(ReporterPlugin):
 
 		ff = Glyphs.font
 
-		# tabTextLength = len(ff.currentTab.layers)
-		# tabTextCaretPos = ff.currentTab.graphicView().textStorage().selectedRange().location
-		# print tabTextLength == tabTextCaretPos # caret is at the very end
-		layer = ff.selectedLayers[0] #Glyphs.orderedDocuments()[0].font.selectedLayers[0]
+		layer = ff.currentTab.activeLayer()
 
 		try:
+			if not layer:
+				if currentGlyphName:
+					self.activeGlyphChanged = True
+				currentGlyphName = None
+				return
 			thisGlyphName = str(layer.parent.name)
 			if str(currentGlyphName) != thisGlyphName:
 				currentGlyphName = thisGlyphName
