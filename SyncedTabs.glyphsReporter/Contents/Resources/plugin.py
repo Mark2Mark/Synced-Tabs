@@ -215,6 +215,7 @@ class SyncedTabs(ReporterPlugin):
 				if currentGlyphName:
 					self.activeGlyphChanged = True
 				currentGlyphName = None
+				self.activeGlyphChanged = False
 				return
 			thisGlyphName = str(layer.parent.name)
 			if str(currentGlyphName) != thisGlyphName:
