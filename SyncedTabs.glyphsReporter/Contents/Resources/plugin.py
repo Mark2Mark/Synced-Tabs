@@ -126,9 +126,9 @@ class SyncedTabs(ReporterPlugin):
 					## verify glyph in font
 					normalizedText, currentLayers = [], []
 					for l in sourceTab.layers:
-						try:
+						if l.parent.name:
 							currentLayers.append(l.parent.name)
-						except:
+						else:
 							currentLayers.append(newLine)
 					for g in currentLayers: # for g in sourceTab.text:
 						if g != newLine:
