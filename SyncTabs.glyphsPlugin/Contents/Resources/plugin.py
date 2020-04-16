@@ -46,13 +46,11 @@ class SyncTabs(GeneralPlugin):
 		try:
 			for HOOK in HOOKS:
 				Glyphs.removeCallback(self.keepSelectionInSync, HOOK)
-			print("- CALLBACK REMOVE (DEL)")
 		except:
 			import traceback
 			print(traceback.format_exc())
 
 	def toggleSyncing_(self, sender=None):
-		print("TOGGLE")
 		Glyphs.boolDefaults["com.markfromberg.SyncTabs.state"] = not Glyphs.boolDefaults["com.markfromberg.SyncTabs.state"]
 		self.setSyncState( Glyphs.boolDefaults["com.markfromberg.SyncTabs.state"] )
 
@@ -62,7 +60,6 @@ class SyncTabs(GeneralPlugin):
 			try:
 				for HOOK in HOOKS:
 					Glyphs.removeCallback(self.syncEditViews_, HOOK)
-				print("- CALLBACK REMOVE")
 			except:
 				import traceback
 				print(traceback.format_exc())
@@ -70,7 +67,6 @@ class SyncTabs(GeneralPlugin):
 			try:
 				for HOOK in HOOKS:
 					Glyphs.addCallback(self.syncEditViews_, HOOK)
-				print("- CALLBACK ADD")
 			except:
 				import traceback
 				print(traceback.format_exc())
@@ -80,7 +76,6 @@ class SyncTabs(GeneralPlugin):
 		)
 
 	def syncEditViews_(self, sender=None, layer=None):
-		print("-- called")
 		try:
 			sourceFont = Glyphs.font
 			sourceTab = sourceFont.currentTab
