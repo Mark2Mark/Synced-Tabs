@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleExecutable</key>
+	<string>plugin</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.markfromberg.SyncTabs</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>SyncTabs</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string> <!-- 1.0 -->
+	<key>CFBundleVersion</key>
+	<string>1</string> <!-- 123 -->
+	<key>UpdateFeedURL</key>
+	<string>https://raw.githubusercontent.com/mark2mark/Synced-Tabs/master/SyncedTabs.glyphsReporter/Contents/Info.plist</string>
+	<key>productPageURL</key>
+	<string>https://github.com/mark2mark/Synced-Tabs</string>
+	<key>productReleaseNotes</key>
+	<string>Glyphs 3 compatibility</string>
+	<key>NSHumanReadableCopyright</key>
+	<string>Copyright, Mark Frömberg (@mark2mark) and Toshi Omagari (@Tosche), 2017</string>
+	<key>NSPrincipalClass</key>
+	<string>SyncTabs</string>
+	<key>PyMainFileNames</key>
+	<array>
+		<string>plugin.py</string>
+	</array>
+</dict>
+</plist>
