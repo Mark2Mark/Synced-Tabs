@@ -45,7 +45,7 @@ class SyncTabs(GeneralPlugin):
 	def __del__(self):
 		try:
 			for HOOK in HOOKS:
-				Glyphs.removeCallback(self.keepSelectionInSync, HOOK)
+				Glyphs.removeCallback(self.keepSelectionInSync, callbackType=HOOK)
 		except:
 			import traceback
 			print(traceback.format_exc())
@@ -59,7 +59,7 @@ class SyncTabs(GeneralPlugin):
 		if not state:
 			try:
 				for HOOK in HOOKS:
-					Glyphs.removeCallback(self.syncEditViews_, HOOK)
+					Glyphs.removeCallback(self.syncEditViews_, callbackType=HOOK)
 			except:
 				import traceback
 				print(traceback.format_exc())
