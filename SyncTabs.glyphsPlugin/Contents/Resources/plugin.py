@@ -13,11 +13,13 @@ from __future__ import division, print_function, unicode_literals
 ###########################################################################################################
 
 import objc
-from GlyphsApp import *
-from GlyphsApp.plugins import *
+from AppKit import NSMenuItem
+from GlyphsApp import Glyphs, VIEW_MENU, UPDATEINTERFACE, MOUSEMOVED, ONSTATE, OFFSTATE
+from GlyphsApp.plugins import GeneralPlugin
 
 MENU = VIEW_MENU
-HOOKS = (UPDATEINTERFACE, MOUSEMOVED) #, "GSRedrawEditView")
+HOOKS = (UPDATEINTERFACE, MOUSEMOVED)
+
 
 class SyncTabs(GeneralPlugin):
 
@@ -33,15 +35,12 @@ class SyncTabs(GeneralPlugin):
 	@objc.python_method
 	def start(self):
 		Glyphs.registerDefault("com.markfromberg.SyncTabs.state", False)
-		
-		self.menuItem = NSMenuItem(
-			self.name,
-			self.toggleSyncing_,
-			)
+
+		self.menuItem = NSMenuItem(self.name, self.toggleSyncing_)
 		Glyphs.menu[MENU].append(self.menuItem)
-		
+
 		self.setSyncState(Glyphs.boolDefaults["com.markfromberg.SyncTabs.state"])
-	
+
 	def __del__(self):
 		try:
 			for HOOK in HOOKS:
@@ -52,7 +51,7 @@ class SyncTabs(GeneralPlugin):
 
 	def toggleSyncing_(self, sender=None):
 		Glyphs.boolDefaults["com.markfromberg.SyncTabs.state"] = not Glyphs.boolDefaults["com.markfromberg.SyncTabs.state"]
-		self.setSyncState( Glyphs.boolDefaults["com.markfromberg.SyncTabs.state"] )
+		self.setSyncState(Glyphs.boolDefaults["com.markfromberg.SyncTabs.state"])
 
 	@objc.python_method
 	def setSyncState(self, state):
@@ -70,12 +69,10 @@ class SyncTabs(GeneralPlugin):
 			except:
 				import traceback
 				print(traceback.format_exc())
-				
-		self.menuItem.setState_(
-			ONSTATE if state else OFFSTATE
-		)
 
-	def syncEditViews_(self, sender=None, layer=None):
+		self.menuItem.setState_(ONSTATE if state else OFFSTATE)
+
+	def syncEditViews_(self, sender=None):
 		try:
 			sourceFont = Glyphs.font
 			sourceTab = sourceFont.currentTab
@@ -103,9 +100,9 @@ class SyncTabs(GeneralPlugin):
 					otherTab = otherFont.currentTab
 					if not otherTab:
 						otherTab = otherFont.newTab()
-					
+
 					otherView = otherTab.graphicView()
-				
+
 					if otherTab.text != sourceText or otherTab.textCursor != sourceTextCursor:
 						try:
 							otherTab.text = sourceText
@@ -120,11 +117,11 @@ class SyncTabs(GeneralPlugin):
 							otherTab.graphicView().setKerningMode_(sourceKerningMode)
 						except:
 							pass
-					
+
 					try:
 						otherFont.tool = sourceTool
 					except:
-						pass 
+						pass
 
 					try:
 						otherTab.viewPort = sourceVisibleRect
@@ -135,10 +132,8 @@ class SyncTabs(GeneralPlugin):
 		except:
 			import traceback
 			print(traceback.format_exc())
-	
 
 	@objc.python_method
 	def __file__(self):
 		"""Please leave this method unchanged"""
 		return __file__
-	
