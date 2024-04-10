@@ -14,11 +14,11 @@ from __future__ import division, print_function, unicode_literals
 
 import objc
 from AppKit import NSMenuItem
-from GlyphsApp import Glyphs, VIEW_MENU, UPDATEINTERFACE, MOUSEMOVED, ONSTATE, OFFSTATE
+from GlyphsApp import Glyphs, VIEW_MENU, UPDATEINTERFACE, ONSTATE, OFFSTATE
 from GlyphsApp.plugins import GeneralPlugin
 
 MENU = VIEW_MENU
-HOOKS = (UPDATEINTERFACE, MOUSEMOVED)
+HOOKS = (UPDATEINTERFACE, )
 
 
 class SyncTabs(GeneralPlugin):
