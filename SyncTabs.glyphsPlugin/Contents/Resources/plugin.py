@@ -50,20 +50,16 @@ class SyncTabs(GeneralPlugin):
 
 	@objc.python_method
 	def setSyncState(self, state):
-		if not state:
-			try:
+		try:
+			if not state:
 				for HOOK in HOOKS:
 					Glyphs.removeCallback(self.syncEditViews_, callbackType=HOOK)
-			except:
-				import traceback
-				print(traceback.format_exc())
-		else:
-			try:
+			else:
 				for HOOK in HOOKS:
 					Glyphs.addCallback(self.syncEditViews_, HOOK)
-			except:
-				import traceback
-				print(traceback.format_exc())
+		except:
+			import traceback
+			print(traceback.format_exc())
 
 		self.menuItem.setState_(ONSTATE if state else OFFSTATE)
 
