@@ -18,7 +18,7 @@ from GlyphsApp import Glyphs, VIEW_MENU, UPDATEINTERFACE, ONSTATE, OFFSTATE
 from GlyphsApp.plugins import GeneralPlugin
 
 MENU = VIEW_MENU
-HOOKS = (UPDATEINTERFACE, )
+HOOKS = (UPDATEINTERFACE, UPDATEEDITVIEWFRAME)
 
 
 class SyncTabs(GeneralPlugin):
