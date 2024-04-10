@@ -42,12 +42,7 @@ class SyncTabs(GeneralPlugin):
 		self.setSyncState(Glyphs.boolDefaults["com.markfromberg.SyncTabs.state"])
 
 	def __del__(self):
-		try:
-			for HOOK in HOOKS:
-				Glyphs.removeCallback(self.keepSelectionInSync, callbackType=HOOK)
-		except:
-			import traceback
-			print(traceback.format_exc())
+		self.setSyncState(False)
 
 	def toggleSyncing_(self, sender=None):
 		Glyphs.boolDefaults["com.markfromberg.SyncTabs.state"] = not Glyphs.boolDefaults["com.markfromberg.SyncTabs.state"]
