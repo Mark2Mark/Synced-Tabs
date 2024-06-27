@@ -36,7 +36,10 @@ class SyncTabs(GeneralPlugin):
 	def start(self):
 		Glyphs.registerDefault("com.markfromberg.SyncTabs.state", False)
 
-		self.menuItem = NSMenuItem(self.name, self.toggleSyncing_)
+		if Glyphs.buildNumber >= 3311:
+			self.menuItem = NSMenuItem(self.name, callback=self.toggleSyncing_, target=self)
+		else:
+			self.menuItem = NSMenuItem(self.name, self.toggleSyncing_)
 		Glyphs.menu[MENU].append(self.menuItem)
 
 		self.setSyncState(Glyphs.boolDefaults["com.markfromberg.SyncTabs.state"])
