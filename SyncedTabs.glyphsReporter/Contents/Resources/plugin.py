@@ -7,9 +7,9 @@
 #
 #	Read the docs:
 #	https://github.com/schriftgestalt/GlyphsSDK/tree/master/Python%20Templates/Reporter
-#	
+#
 #	Based on the script [Sync Edit Views.py](https://github.com/Tosche/Glyphs-Scripts/blob/master/Sync%20Edit%20Views.py) by [Tosche](https://github.com/Tosche)
-#	
+#
 #	> Keep all tabs in all open fonts in sync with the currently active tab.
 #	> Set a /space in other tabs, when a certain glyph is not in these fonts.
 #	> Handles newline characters.
@@ -32,11 +32,13 @@
 #
 ###########################################################################################################
 
-from GlyphsApp.plugins import *
+
+from GlyphsApp import Glyphs
+from GlyphsApp.plugins import ReporterPlugin
 import traceback
 
 version = "1.4"
-vID = "com.markfromberg.syncedTabs" # vendorID
+vID = "com.markfromberg.syncedTabs"  # vendorID
 
 doSyncTools = False
 
@@ -52,13 +54,14 @@ currentTool = None
 newLine = "\n"
 placeholder = "/Placeholder "
 
+
 class SyncedTabs(ReporterPlugin):
 
 	def settings(self):
 		self.name = 'SyncedTabs'
 		self.menuName = Glyphs.localize({'en': u'Synced Tabs'})
 		#self.Glyphs = NSApplication.sharedApplication()
-		
+
 		# For the Observers
 		#------------------
 		self.activeGlyphChanged = False
@@ -66,8 +69,6 @@ class SyncedTabs(ReporterPlugin):
 		self.activeViewPanChanged = False
 		self.activeMasterIndexChanged = False
 		self.activeToolChanged = False
-
-
 
 	def getSelectedRange(self):
 		# new in Glyphs 2.3 or 2.4
@@ -78,27 +79,27 @@ class SyncedTabs(ReporterPlugin):
 		# Range = self.graphicView.selectedLayerRange()
 		# return Range
 
-
 	def SyncEditViews(self):
 		'''
 		Based on the code from Tosche : `Sync Edit Views.py` @Github
 		'''
 		try:
-			if Glyphs.defaults["%s.doSyncTools" % vID] == True:
+			if Glyphs.defaults["%s.doSyncTools" % vID]:
 				doSyncTools = True
 			else:
 				doSyncTools = False
-		except: pass
+		except:
+			pass
 
 		try:
 			sourceFont = Glyphs.font
 			sourceMasterIndex = sourceFont.masterIndex
-			
+
 			sourceTab = sourceFont.currentTab
 			sourceScale = sourceTab.scale
 			sourceVisibleRect = sourceTab.viewPort
 			sourcePreviewHeight = sourceTab.previewHeight
-			
+
 			sourceGraphicView = sourceTab.graphicView()
 			sourceSelection = sourceGraphicView.selectedRange()
 			doKern = sourceGraphicView.doKerning()
@@ -108,29 +109,29 @@ class SyncedTabs(ReporterPlugin):
 				if otherFont == sourceFont:
 					continue
 
-				if not otherFont.parent.windowForSheet().isVisible(): # Only apply to visible Fonts
+				if not otherFont.parent.windowForSheet().isVisible():  # Only apply to visible Fonts
 					continue
 
 				otherFontLastTool = otherFont.tool
-				
+
 				otherTab = otherFont.currentTab
 
 				try:
 					otherFont.masterIndex = sourceMasterIndex
 				except:
-					pass # print traceback.format_exc()
+					pass  # print traceback.format_exc()
 
 				otherView = otherTab.graphicView()
-				if self.activeGlyphChanged: # dont reset the content all the time. 
+				if self.activeGlyphChanged:  # dont reset the content all the time.
 					# TODO: fix layer synconisation for views that where nevers synced.
 					## verify glyph in font
 					normalizedText, currentLayers = [], []
-					for l in sourceTab.layers:
-						if l.parent.name:
-							currentLayers.append(l.parent.name)
+					for layer in sourceTab.layers:
+						if layer.parent.name:
+							currentLayers.append(layer.parent.name)
 						else:
 							currentLayers.append(newLine)
-					for g in currentLayers: # for g in sourceTab.text:
+					for g in currentLayers:  # for g in sourceTab.text:
 						if g != newLine:
 							if g in otherFont.glyphs:
 								normalizedText.append(g)
@@ -138,7 +139,7 @@ class SyncedTabs(ReporterPlugin):
 								normalizedText.append("space")
 						else:
 							normalizedText.append(newLine)
-				
+
 					normalizedText = "/" + "/".join([x for x in normalizedText])
 					otherTab.text = normalizedText
 
@@ -148,7 +149,7 @@ class SyncedTabs(ReporterPlugin):
 					otherView.setDoKerning_(doKern)
 				if otherView.doSpacing() != doSpace:
 					otherView.setDoSpacing_(doSpace)
-				
+
 				## A)
 				if doSyncTools:
 					otherFont.tool = sourceFont.tool
@@ -157,10 +158,9 @@ class SyncedTabs(ReporterPlugin):
 
 				## B) **UC**
 				# if sourceFont.parent.windowController().toolTempSelection():
-				# 	otherFont.tool = 'SelectTool' 
+				# 	otherFont.tool = 'SelectTool'
 				# else:
 				# 	otherFont.tool = otherFontLastTool
-
 
 				## C)
 				# if doSyncTools:
@@ -186,9 +186,7 @@ class SyncedTabs(ReporterPlugin):
 				otherView.viewWillDraw()
 
 		except:
-			print traceback.format_exc()
-
-
+			print(traceback.format_exc())
 
 	# Observers
 	#----------
@@ -222,11 +220,11 @@ class SyncedTabs(ReporterPlugin):
 				currentGlyphName = thisGlyphName
 				#print "Observe Glyph Change"
 				self.activeGlyphChanged = True
-				
+
 			else:
 				### If same glyph, check if position in tab (Otherwise changing from one /b to another in one tab wont trigger)
 				# position = layer.parent.parent.currentTab.graphicView().textStorage().selectedRange() # deprecated
-				position = layer.parent.parent.currentTab.graphicView().selectedRange() # new
+				position = layer.parent.parent.currentTab.graphicView().selectedRange()  # new
 				if currentCaretPosition != position:
 					currentCaretPosition = position
 					self.activeGlyphChanged = True
@@ -237,10 +235,7 @@ class SyncedTabs(ReporterPlugin):
 				self.activeGlyphChanged = False
 				return False
 		except:
-			pass # print traceback.format_exc()
-
-
-
+			pass  # print traceback.format_exc()
 
 	def observeZoom(self):
 		global currentZoom
@@ -256,8 +251,7 @@ class SyncedTabs(ReporterPlugin):
 				self.activeZoomChanged = False
 				return False
 		except:
-			pass # print traceback.format_exc()
-
+			pass  # print traceback.format_exc()
 
 	def observeMasterChange(self):
 		global currentMasterIndex
@@ -273,9 +267,7 @@ class SyncedTabs(ReporterPlugin):
 				self.activeMasterIndexChanged = False
 				return False
 		except:
-			pass # print traceback.format_exc()
-
-
+			pass  # print traceback.format_exc()
 
 	def observeToolChange(self):
 		global currentTool
@@ -291,9 +283,7 @@ class SyncedTabs(ReporterPlugin):
 				self.activeToolChanged = False
 				return False
 		except:
-			pass # print traceback.format_exc()
-
-
+			pass  # print traceback.format_exc()
 
 	#def observeMasterSwitch(self):
 	## Perhaps not nessecary anymore? Seems to update already ...
@@ -313,12 +303,7 @@ class SyncedTabs(ReporterPlugin):
 				self.activeViewPanChanged = False
 				return False
 		except:
-			pass # print traceback.format_exc()
-
-
-
-
-
+			pass  # print traceback.format_exc()
 
 	def drawKammerakindRahmen(self, thisFont):
 		pass
@@ -326,17 +311,15 @@ class SyncedTabs(ReporterPlugin):
 		#sourceFontCurrentTab = Glyphs.font.currentTab
 		sourceFontCurrentTab = thisFont.currentTab
 		vp = sourceFontCurrentTab.viewPort
-		NSColor.colorWithCalibratedRed_green_blue_alpha_( 0, 0.8, 0.2, 0.1 ).set()
+		NSColor.colorWithCalibratedRed_green_blue_alpha_(0, 0.8, 0.2, 0.1).set()
 		NSBezierPath.setLineWidth_(40)
 		NSBezierPath.strokeRect_(vp) # NSBezierPath.fillRect_(vp)
 		'''
 
-
-
 	#========
 	# M A I N
 	#========
-	def foregroundInViewCoords(self, layer): # important to make the viewport (in drawKammerakindRahmen) work.
+	def foregroundInViewCoords(self, layer):  # important to make the viewport (in drawKammerakindRahmen) work.
 
 		self.observeGlyphChange()
 		self.observeZoom()
@@ -347,10 +330,5 @@ class SyncedTabs(ReporterPlugin):
 		if self.activeGlyphChanged or self.activeZoomChanged or self.activeViewPanChanged or self.activeMasterIndexChanged or self.activeToolChanged:
 			self.SyncEditViews()
 
-
 		if layer and layer.parent.parent == Glyphs.font:
 			self.drawKammerakindRahmen(layer.parent.parent)
-
-
-
-

@@ -87,7 +87,7 @@ class SyncTabs(GeneralPlugin):
 				sourceKerningMode = sourceTab.graphicView().kerningMode()
 
 				for otherFont in Glyphs.fonts[1:]:
-					if not otherFont.parent.windowForSheet().reallyVisible(): # Only apply to visible Fonts
+					if not otherFont.parent.windowForSheet().reallyVisible():  # Only apply to visible Fonts
 						continue
 
 					try:
@@ -99,7 +99,7 @@ class SyncTabs(GeneralPlugin):
 					if not otherTab:
 						otherTab = otherFont.newTab()
 
-					otherView = otherTab.graphicView()
+					# otherView = otherTab.graphicView()
 
 					if otherTab.text != sourceText or otherTab.textCursor != sourceTextCursor:
 						try:
@@ -108,7 +108,7 @@ class SyncTabs(GeneralPlugin):
 							otherTab.textRange = sourceTextRange
 						except:
 							pass
-						
+
 						try:
 							otherTab.graphicView().setDoSpacing_(sourceDoSpacing)
 							otherTab.graphicView().setDoKerning_(sourceDoKerning)
