@@ -13,8 +13,7 @@ from __future__ import division, print_function, unicode_literals
 ###########################################################################################################
 
 import objc
-from AppKit import NSMenuItem
-from GlyphsApp import Glyphs, VIEW_MENU, UPDATEINTERFACE, ONSTATE, OFFSTATE
+from GlyphsApp import Glyphs, VIEW_MENU, UPDATEINTERFACE, ONSTATE, OFFSTATE, NSMenuItem
 from GlyphsApp.plugins import GeneralPlugin
 
 MENU = VIEW_MENU
@@ -35,8 +34,10 @@ class SyncTabs(GeneralPlugin):
 	@objc.python_method
 	def start(self):
 		Glyphs.registerDefault("com.markfromberg.SyncTabs.state", False)
-
-		if Glyphs.buildNumber >= 3311:
+		if Glyphs.buildNumber >= 3320:
+			from GlyphsApp.UI import MenuItem
+			self.menuItem = MenuItem(self.name, action=self.toggleSyncing_, target=self)
+		elif Glyphs.versionNumber >= 3.3:
 			self.menuItem = NSMenuItem(self.name, callback=self.toggleSyncing_, target=self)
 		else:
 			self.menuItem = NSMenuItem(self.name, self.toggleSyncing_)
