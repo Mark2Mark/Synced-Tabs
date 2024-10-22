@@ -71,7 +71,7 @@ class SyncTabs(GeneralPlugin):
 		try:
 			sourceFont = Glyphs.font
 			sourceTab = sourceFont.currentTab
-			
+
 			sendingTab = sender.object()
 			if sendingTab != sourceTab:
 				return
