@@ -13,17 +13,11 @@
 	<key>CFBundleName</key>
 	<string>SyncTabs</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.1</string> <!-- 1.0 -->
+	<string>1.1.1</string> <!-- 1.0 -->
 	<key>CFBundleVersion</key>
-	<string>6</string> <!-- 123 -->
-	<key>UpdateFeedURL</key>
-	<string>https://raw.githubusercontent.com/mark2mark/Synced-Tabs/master/SyncedTabs.glyphsReporter/Contents/Info.plist</string>
-	<key>productPageURL</key>
-	<string>https://github.com/mark2mark/Synced-Tabs</string>
-	<key>productReleaseNotes</key>
-	<string>Glyphs 3 compatibility</string>
+	<string>7</string> <!-- 123 -->
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright, Mark Frömberg (@mark2mark) and Toshi Omagari (@Tosche), 2017</string>
+	<string>Copyright, Mark Frömberg (@mark2mark) and Toshi Omagari (@Tosche), 2025</string>
 	<key>NSPrincipalClass</key>
 	<string>SyncTabs</string>
 </dict>
