@@ -70,10 +70,12 @@ class SyncTabs(GeneralPlugin):
 	def syncEditViews_(self, sender=None):
 		try:
 			sourceFont = Glyphs.font
+			if not sourceFont:
+				return
 			sourceTab = sourceFont.currentTab
 
-			sendingTab = sender.object()
-			if sendingTab != sourceTab:
+			sendingTab = sender.object() if sender else None
+			if sendingTab not in (sourceTab, sourceFont):
 				return
 			if sourceTab and len(Glyphs.fonts) > 1:
 				sourceMasterIndex = sourceFont.masterIndex
@@ -87,7 +89,9 @@ class SyncTabs(GeneralPlugin):
 				sourceDoKerning = sourceTab.graphicView().doKerning()
 				sourceKerningMode = sourceTab.graphicView().kerningMode()
 
-				for otherFont in Glyphs.fonts[1:]:
+				for otherFont in Glyphs.fonts:
+					if otherFont == sourceFont:
+						continue
 					if not otherFont.parent.windowForSheet().reallyVisible():  # Only apply to visible Fonts
 						continue
 
